@@ -1,0 +1,9 @@
+myvenv
+db.mysql
+.vscode
+__pycache__
+*.pyc
+.DS_Store
+.env
+Lib
+Scripts
