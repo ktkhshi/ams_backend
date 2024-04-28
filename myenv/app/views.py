@@ -32,3 +32,4 @@ class PostViewSet(ModelViewSet):
   def perform_create(self, serializer, **kwargs):
     # 投稿を作成するユーザを設定
     serializer.save(user=self.request.user)
+  
