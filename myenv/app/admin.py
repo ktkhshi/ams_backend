@@ -37,16 +37,6 @@ class ClientCustom(ModelAdmin):
 
 admin.site.register(Client, ClientCustom)
 
-class CommonHolidayCustom(ModelAdmin):
-    # 一覧
-    list_display = ("date_day", "name")
-    # リンク
-    list_display_links = ("date_day", "name")
-    # 順番
-    ordering = ("-date_day",)
-
-admin.site.register(CommonHoliday, CommonHolidayCustom)
-
 class ProjectCustom(ModelAdmin):
     # 一覧
     list_display = ("uid", "main_name", "sub_name", "updated_at", "created_at")

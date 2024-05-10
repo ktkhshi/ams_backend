@@ -51,13 +51,29 @@ class Project(models.Model):
 
     def __str__(self):
         return self.main_name + "-" + self.sub_name
+
+# 契約タイプ
+class ContractType(models.Model):
+    id = models.PositiveSmallIntegerField("id", unique=True, primary_key=True)
+
+    contract_type_name = models.CharField(verbose_name="契約タイプ名", max_length=255, blank=True, default="")
     
+    sort_order = models.PositiveSmallIntegerField(verbose_name="表示順")
+
+    created_at = models.DateTimeField("作成日", auto_now_add=True)
+    updated_at = models.DateTimeField("更新日", auto_now=True)
+
+    def __str__(self):
+        return self.contract_type_name
+
 # プロジェクト契約モデル
 class ProjectContract(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     unit_price = models.DecimalField(verbose_name="単価", max_digits=10, decimal_places=2)
-    contract_type = models.PositiveSmallIntegerField("契約タイプ")
+    contract_type = models.ForeignKey(
+        ContractType, verbose_name="契約形態", on_delete=models.PROTECT
+    )
     lower_hours_a_month = models.DecimalField(verbose_name="下限時間", max_digits=5, decimal_places=2)
     upper_hours_a_month = models.DecimalField(verbose_name="上限時間", max_digits=5, decimal_places=2)
     latest_work_started_at = models.TimeField(verbose_name="規定の開始時刻")

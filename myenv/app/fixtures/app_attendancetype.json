@@ -1,0 +1,13 @@
+[
+	{"model": "app.attendancetype", "pk": 1,  "fields": {"attendance_name": "有休",     "sort_order": 1, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 2,  "fields": {"attendance_name": "午前休",   "sort_order": 2, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 3,  "fields": {"attendance_name": "午後休",   "sort_order": 3, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 4,  "fields": {"attendance_name": "遅刻",     "sort_order": 4, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 5,  "fields": {"attendance_name": "早退",     "sort_order": 5, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 6,  "fields": {"attendance_name": "慶弔休暇", "sort_order": 6, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 7,  "fields": {"attendance_name": "特別休暇", "sort_order": 7, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 8,  "fields": {"attendance_name": "休出",     "sort_order": 8, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 9,  "fields": {"attendance_name": "自社勤務", "sort_order": 9, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 10, "fields": {"attendance_name": "客先休", 	"sort_order": 10, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}},
+	{"model": "app.attendancetype", "pk": 11, "fields": {"attendance_name": "待機", 	  "sort_order": 11, "created_at": "2024-05-09T00:00:00Z", "updated_at": "2024-05-09T00:00:00Z"}}
+]
