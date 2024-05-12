@@ -13,3 +13,12 @@ urlpatterns = [
     # 新規、編集、削除
     path("", include(router.urls)),
 ]
+
+router.register("clients", views.ClientViewSet)
+
+urlpatterns = [
+    # 投稿一覧
+    #path("client-list/", views.PostListView.as_view()),
+    # 新規、編集、削除
+    path("", include(router.urls)),
+]

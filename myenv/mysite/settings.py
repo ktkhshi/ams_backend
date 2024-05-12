@@ -140,8 +140,6 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": env("CLOUDINARY_API_SECRET"),
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # メール設定
 EMAIL_BACKEND = env("EMAIL_BACKEND")
 EMAIL_HOST = env("EMAIL_HOST")

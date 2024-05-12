@@ -2,6 +2,7 @@ from rest_framework import serializers
 from accounts.serializers import UserSerializer
 from mysite.utils import Base64ImageField
 from app.models import Post
+from app.models import Client
 
 # 投稿のシリアライザー
 class PostSerializer(serializers.ModelSerializer):
@@ -16,4 +17,13 @@ class PostSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Post
+    fields = "__all__"
+
+# クライアントのシリアライザー
+class ClientSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.CharField(read_only=True)
+
+  class Meta:
+    model = Client
     fields = "__all__"
