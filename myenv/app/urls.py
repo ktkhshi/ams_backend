@@ -18,7 +18,7 @@ router.register("clients", views.ClientViewSet)
 
 urlpatterns = [
     # 投稿一覧
-    #path("client-list/", views.PostListView.as_view()),
+    path("client-list/", views.ClientListView.as_view()),
     # 新規、編集、削除
     path("", include(router.urls)),
 ]
