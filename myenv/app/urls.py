@@ -4,6 +4,9 @@ from app import views
 
 router = routers.DefaultRouter()
 router.register("posts", views.PostViewSet)
+router.register("clients", views.ClientViewSet)
+router.register("projects", views.ProjectViewSet)
+router.register("contracts", views.ContractViewSet)
 
 urlpatterns = [
     # 投稿一覧
@@ -12,13 +15,13 @@ urlpatterns = [
     path("post-detail/<uid>/", views.PostDetailView.as_view()),
     # 新規、編集、削除
     path("", include(router.urls)),
-]
 
-router.register("clients", views.ClientViewSet)
-
-urlpatterns = [
-    # 投稿一覧
+    # クライアント一覧
     path("client-list/", views.ClientListView.as_view()),
-    # 新規、編集、削除
-    path("", include(router.urls)),
+
+    # プロジェクト一覧
+    path("project-list/", views.ProjectListView.as_view()),
+
+    # 契約一覧
+    path("contract-list/", views.ContractListView.as_view()),
 ]

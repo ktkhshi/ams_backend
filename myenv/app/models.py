@@ -42,6 +42,7 @@ class Project(models.Model):
     
     main_name = models.CharField("メイン名", max_length=255)
     sub_name = models.CharField("サブ名", max_length=255)
+    note = models.CharField(verbose_name="備考", max_length=255, blank=True, default="")
 
     created_at = models.DateTimeField("作成日", auto_now_add=True)
     updated_at = models.DateTimeField("更新日", auto_now=True)
@@ -66,8 +67,8 @@ class ContractType(models.Model):
     def __str__(self):
         return self.contract_type_name
 
-# プロジェクト契約モデル
-class ProjectContract(models.Model):
+# 契約モデル
+class Contract(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     unit_price = models.DecimalField(verbose_name="単価", max_digits=10, decimal_places=2)
@@ -79,18 +80,19 @@ class ProjectContract(models.Model):
     latest_work_started_at = models.TimeField(verbose_name="規定の開始時刻")
     earliest_work_ended_at = models.TimeField(verbose_name="規定の終了時刻")
     work_hours_a_day = models.DecimalField(verbose_name="所定勤務時間", max_digits=4, decimal_places=2)
-    contract_started_on = models.DateField(verbose_name="契約開始日")
-    contract_ended_on = models.DateField(verbose_name="契約終了日", blank=True, null=True)
+    started_on = models.DateField(verbose_name="契約開始日")
+    ended_on = models.DateField(verbose_name="契約終了日", blank=True, null=True)
     contract_name = models.CharField("契約名", max_length=255, default="")
+    note = models.CharField(verbose_name="備考", max_length=255, blank=True, default="")
 
     created_at = models.DateTimeField("作成日", auto_now_add=True)
     updated_at = models.DateTimeField("更新日", auto_now=True)
     class Meta:
-        verbose_name = "プロジェクト契約"
-        verbose_name_plural = "プロジェクト契約"
+        verbose_name = "契約"
+        verbose_name_plural = "契約"
 
     def __str__(self):
-        return self.contract_name + "-" + self.contract_started_on.strftime('%Y%m%d')
+        return self.contract_name + "-" + self.started_on.strftime('%Y%m%d')
     
 # クライアントモデル
 class Client(models.Model):
@@ -121,8 +123,8 @@ class UserOnProject(models.Model):
         Project, verbose_name="プロジェクト", on_delete=models.CASCADE
     )
 
-    project_contract = models.ForeignKey(
-        ProjectContract, verbose_name="プロジェクト契約", on_delete=models.PROTECT
+    contract = models.ForeignKey(
+        Contract, verbose_name="契約", on_delete=models.PROTECT
     )
 
     client = models.ForeignKey(
@@ -262,6 +264,7 @@ class UserSpecialAttendance(models.Model):
     attendance_type = models.ForeignKey(
         AttendanceType, verbose_name="勤務タイプ", on_delete=models.PROTECT, default=""
     )
+    note = models.CharField(verbose_name="備考", max_length=255, blank=True, default="")
 
     created_at = models.DateTimeField("作成日", auto_now_add=True)
     updated_at = models.DateTimeField("更新日", auto_now=True)

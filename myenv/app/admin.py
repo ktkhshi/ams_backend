@@ -3,9 +3,8 @@ from django.contrib.admin import ModelAdmin
 from app.models import Post
 
 from app.models import Client
-from app.models import CommonHoliday
 from app.models import Project
-from app.models import ProjectContract
+from app.models import Contract
 from app.models import UserOnProject
 from app.models import UserSpecialAttendance
 from app.models import UserOnProjectTime
@@ -39,7 +38,7 @@ admin.site.register(Client, ClientCustom)
 
 class ProjectCustom(ModelAdmin):
     # 一覧
-    list_display = ("uid", "main_name", "sub_name", "updated_at", "created_at")
+    list_display = ("uid", "main_name", "sub_name", "note", "updated_at", "created_at")
     # リンク
     list_display_links = ("uid", "main_name", "sub_name")
     # 順番
@@ -49,9 +48,9 @@ class ProjectCustom(ModelAdmin):
 
 admin.site.register(Project, ProjectCustom)
 
-class ProjectContractCustom(ModelAdmin):
+class ContractCustom(ModelAdmin):
     # 一覧
-    list_display = ("uid", "unit_price", "contract_type", "lower_hours_a_month", "upper_hours_a_month", "latest_work_started_at", "earliest_work_ended_at", "work_hours_a_day", "contract_started_on", "contract_ended_on", "contract_name", "updated_at", "created_at")
+    list_display = ("uid", "unit_price", "contract_type", "lower_hours_a_month", "upper_hours_a_month", "latest_work_started_at", "earliest_work_ended_at", "work_hours_a_day", "started_on", "ended_on", "contract_name", "note",  "updated_at", "created_at")
     # リンク
     list_display_links = ("uid", "contract_name")
     # 順番
@@ -59,11 +58,11 @@ class ProjectContractCustom(ModelAdmin):
     # 編集不可
     readonly_fields = ("uid", "updated_at", "created_at")
 
-admin.site.register(ProjectContract, ProjectContractCustom)
+admin.site.register(Contract, ContractCustom)
 
 class UserOnProjectCustom(ModelAdmin):
     # 一覧
-    list_display = ("uid", "client_id", "project_id", "project_contract_id", "user_id", "updated_at", "created_at")
+    list_display = ("uid", "client_id", "project_id", "contract_id", "user_id", "updated_at", "created_at")
     # リンク
     list_display_links = ("uid",)
     # 順番
