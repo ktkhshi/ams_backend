@@ -4,6 +4,7 @@ from app import views
 
 router = routers.DefaultRouter()
 router.register("posts", views.PostViewSet)
+router.register("users", views.UserViewSet)
 router.register("clients", views.ClientViewSet)
 router.register("projects", views.ProjectViewSet)
 router.register("contracts", views.ContractViewSet)
@@ -16,6 +17,9 @@ urlpatterns = [
     # 新規、編集、削除
     path("", include(router.urls)),
 
+    # ユーザ一覧
+    path("user-list/", views.UserListView.as_view()),
+
     # クライアント一覧
     path("client-list/", views.ClientListView.as_view()),
 
@@ -24,4 +28,7 @@ urlpatterns = [
 
     # 契約一覧
     path("contract-list/", views.ContractListView.as_view()),
+
+    # ユーザプロジェクト一覧
+    path("useronproject-list/", views.UserOnProjectListView.as_view()),
 ]

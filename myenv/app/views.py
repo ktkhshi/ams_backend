@@ -3,13 +3,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ModelViewSet
 from .models import Post
+from accounts.models import UserAccount
 from .models import Client
 from .models import Project
 from .models import Contract
+from .models import UserOnProject
 from .serializers import PostSerializer
+from .serializers import UserSerializer
 from .serializers import ClientSerializer
 from .serializers import ProjectSerializer
 from .serializers import ContractSerializer
+from .serializers import UserOnProjectSerializer
 
 # 投稿一覧を提供するAPIビュー
 class PostListView(ListAPIView):
@@ -40,7 +44,14 @@ class PostViewSet(ModelViewSet):
     # 投稿を作成するユーザを設定
     serializer.save(user=self.request.user)
 
-
+# ユーザ一覧を提供するAPIビュー
+class UserListView(ListAPIView):
+  # 更新日時で降順に並び替え
+  queryset = UserAccount.objects.all().order_by("-updated_at")
+  serializer_class = UserSerializer
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+  #permission_classes = (IsAdminUser,)
 
 # クライアント一覧を提供するAPIビュー
 class ClientListView(ListAPIView):
@@ -51,6 +62,20 @@ class ClientListView(ListAPIView):
   permission_classes = (AllowAny,)
   #permission_classes = (IsAdminUser,)
 
+# 新規ユーザ作成、編集、削除を行うAPIビューセット
+class UserViewSet(ModelViewSet):
+  queryset = UserAccount.objects.all()
+  serializer_class = UserSerializer
+  # クライアントを識別するためにuidフィールドを使用
+  lookup_field = "uid"
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+  #permission_classes = (IsAdminUser,)
+
+  # 新規ユーザ作成時の保存処理
+  def perform_create(self, serializer, **kwargs):
+    # クライアントを作成する
+    serializer.save()
 
 # 新規クライアント作成、編集、削除を行うAPIビューセット
 class ClientViewSet(ModelViewSet):
@@ -101,18 +126,42 @@ class ContractListView(ListAPIView):
   permission_classes = (AllowAny,)
   #permission_classes = (IsAdminUser,)
 
-
 # 新規プロジェクト契約作成、編集、削除を行うAPIビューセット
 class ContractViewSet(ModelViewSet):
   queryset = Contract.objects.all()
   serializer_class = ContractSerializer
-  # プロジェクト契約を識別するためにuidフィールドを使用
+  # 契約を識別するためにuidフィールドを使用
   lookup_field = "uid"
   # どのユーザでもアクセス可能
   permission_classes = (AllowAny,)
   #permission_classes = (IsAdminUser,)
 
-  # 新規プロジェクト契約作成時の保存処理
+  # 新規契約作成時の保存処理
+  def perform_create(self, serializer, **kwargs):
+    # プロジェクト契約を作成する
+    serializer.save()
+
+  
+# ユーザプロジェクト一覧を提供するAPIビュー
+class UserOnProjectListView(ListAPIView):
+  # 更新日時で降順に並び替え
+  queryset = UserOnProject.objects.all().order_by("-updated_at")
+  serializer_class = UserOnProjectSerializer
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+  #permission_classes = (IsAdminUser,)
+
+# 新規ユーザプロジェクト契約作成、編集、削除を行うAPIビューセット
+class UserOnProjectViewSet(ModelViewSet):
+  queryset = UserOnProject.objects.all()
+  serializer_class = UserOnProjectSerializer
+  # ユーザプロジェクトを識別するためにuidフィールドを使用
+  lookup_field = "uid"
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+  #permission_classes = (IsAdminUser,)
+
+  # 新規ユーザプロジェクト作成時の保存処理
   def perform_create(self, serializer, **kwargs):
     # プロジェクト契約を作成する
     serializer.save()
