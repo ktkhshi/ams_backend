@@ -8,6 +8,7 @@ router.register("users", views.UserViewSet)
 router.register("clients", views.ClientViewSet)
 router.register("projects", views.ProjectViewSet)
 router.register("contracts", views.ContractViewSet)
+router.register("useronprojects", views.UserOnProjectViewSet)
 
 urlpatterns = [
     # 投稿一覧

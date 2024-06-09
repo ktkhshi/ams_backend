@@ -151,7 +151,7 @@ class UserOnProjectListView(ListAPIView):
   permission_classes = (AllowAny,)
   #permission_classes = (IsAdminUser,)
 
-# 新規ユーザプロジェクト契約作成、編集、削除を行うAPIビューセット
+# 新規ユーザプロジェクト作成、編集、削除を行うAPIビューセット
 class UserOnProjectViewSet(ModelViewSet):
   queryset = UserOnProject.objects.all()
   serializer_class = UserOnProjectSerializer
@@ -163,5 +163,5 @@ class UserOnProjectViewSet(ModelViewSet):
 
   # 新規ユーザプロジェクト作成時の保存処理
   def perform_create(self, serializer, **kwargs):
-    # プロジェクト契約を作成する
+    # ユーザプロジェクトを作成する
     serializer.save()
