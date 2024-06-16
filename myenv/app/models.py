@@ -80,6 +80,8 @@ class Contract(models.Model):
     latest_work_started_at = models.TimeField(verbose_name="規定の開始時刻")
     earliest_work_ended_at = models.TimeField(verbose_name="規定の終了時刻")
     work_hours_a_day = models.DecimalField(verbose_name="所定勤務時間", max_digits=4, decimal_places=2)
+    rest_hours_a_day = models.DecimalField(verbose_name="所定休憩時間", max_digits=4, decimal_places=2)
+    
     started_on = models.DateField(verbose_name="契約開始日")
     ended_on = models.DateField(verbose_name="契約終了日", blank=True, null=True)
     contract_name = models.CharField("契約名", max_length=255, default="")
@@ -162,12 +164,16 @@ class UserOnProjectDay(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     month = models.ForeignKey(
-        UserOnProjectMonth, verbose_name="ユーザプロジェクト月", on_delete=models.PROTECT
+        UserOnProjectMonth, verbose_name="ユーザプロジェクト月", related_name='days', on_delete=models.PROTECT
     )
     day_index = models.PositiveSmallIntegerField("日にちインデックス")
 
-    should_work_day = models.BooleanField(verbose_name="稼働日", default=True)
     date_day = models.DateField(verbose_name="日付")
+    should_work_day = models.BooleanField(verbose_name="稼働日", default=True)
+    work_started_at = models.TimeField(verbose_name="開始時刻", blank=True, null=True, default=None)
+    work_ended_at = models.TimeField(verbose_name="終了時刻",  blank=True, null=True, default=None)
+    rest_hours = models.DecimalField(verbose_name="休憩時間", max_digits=4, decimal_places=2, blank=True, null=True, default=None)
+
     private_note = models.CharField(verbose_name="個人メモ", max_length=255, blank=True, default="")
     public_note = models.CharField(verbose_name="公開メモ", max_length=255, blank=True, default="")
 
@@ -213,7 +219,7 @@ class UserOnProjectTime(models.Model):
     def __str__(self):
         return str(self.month.uid) + "-" + f'{self.day_index:02}' + "-" + f'{self.time_index:02}'
 
-# ユーザプロジェクトインデックスモデル
+# ユーザプロジェクトインデックスモデル（中間テーブル）
 class UserOnProjectIndex(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 

@@ -17,7 +17,7 @@ urlpatterns = [
     path("post-detail/<uid>/", views.PostDetailView.as_view()),
     # 新規、編集、削除
     path("", include(router.urls)),
-
+# 
     # ユーザ一覧
     path("user-list/", views.UserListView.as_view()),
 
@@ -32,4 +32,7 @@ urlpatterns = [
 
     # ユーザプロジェクト一覧
     path("useronproject-list/", views.UserOnProjectListView.as_view()),
+
+    # ユーザプロジェクト勤務（指定のプロジェクトの指定月の日にち）一覧
+    path("useronprojectday-list/<int:uid>/<puid>/<yearmonth>/", views.UserOnProjectDayListView.as_view())
 ]

@@ -7,6 +7,10 @@ from app.models import Client
 from app.models import Project
 from app.models import Contract
 from app.models import UserOnProject
+from app.models import UserOnProjectIndex
+from app.models import UserOnProjectMonth
+from app.models import UserOnProjectDay
+from app.models import UserOnProjectTime
 
 # 投稿のシリアライザー
 class PostSerializer(serializers.ModelSerializer):
@@ -99,3 +103,41 @@ class UserOnProjectSerializer(serializers.ModelSerializer):
     model = UserOnProject
     fields = "__all__"
 
+# ユーザプロジェクト月のシリアライザー
+class UserOnProjectMonthSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+
+  class Meta:
+    model = UserOnProjectMonth
+    fields = "__all__"
+
+# ユーザプロジェクトインデックスのシリアライザー
+class UserOnProjectIndexSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+  user_on_project = UserOnProjectSerializer
+  user_on_project_month = UserOnProjectMonthSerializer
+
+  class Meta:
+    model = UserOnProjectIndex
+    fields = "__all__"
+
+# ユーザプロジェクト日のシリアライザー
+class UserOnProjectDaySerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+  month = UserOnProjectMonthSerializer(read_only=True)
+
+  class Meta:
+    model = UserOnProjectDay
+    fields = "__all__"
+
+# ユーザプロジェクト時間のシリアライザー
+class UserOnProjectTimeSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+
+  class Meta:
+    model = UserOnProjectTime
+    fields = "__all__"
