@@ -10,14 +10,14 @@ from .models import Project
 from .models import Contract
 from .models import UserOnProject
 from .models import UserOnProjectIndex
-from .models import UserOnProjectDay
+from .models import UserOnProjectMonth
 from .serializers import PostSerializer
 from .serializers import UserSerializer
 from .serializers import ClientSerializer
 from .serializers import ProjectSerializer
 from .serializers import ContractSerializer
 from .serializers import UserOnProjectSerializer
-from .serializers import UserOnProjectDaySerializer
+from .serializers import UserOnProjectMonthSerializer
 
 # 投稿一覧を提供するAPIビュー
 class PostListView(ListAPIView):
@@ -145,7 +145,6 @@ class ContractViewSet(ModelViewSet):
     # プロジェクト契約を作成する
     serializer.save()
 
-  
 # ユーザプロジェクト一覧を提供するAPIビュー
 class UserOnProjectListView(ListAPIView):
   # 更新日時で降順に並び替え
@@ -172,21 +171,19 @@ class UserOnProjectViewSet(ModelViewSet):
 
 
 # ユーザプロジェクト勤務（日にち）一覧を提供するAPIビュー
-class UserOnProjectDayListView(ListAPIView):
-  serializer_class = UserOnProjectDaySerializer
+class UserOnProjectMonthView(RetrieveAPIView):
+  serializer_class = UserOnProjectMonthSerializer
   permission_classes = (AllowAny,)
 
-  def get_queryset(self):
+  def get_object(self):
     strdate = self.kwargs['yearmonth']
     bufdate = datetime.datetime.strptime(strdate, '%Y%m')
     target_date = datetime.datetime(bufdate.year, bufdate.month, 1)
 
-    # Todo クエリを1回だけ発行するように変更する
-    # Dayに足してすべての行にMonthがくっついてきているので、先頭行のみPrefetchしたい・・
-    uop = UserOnProject.objects.get(user__id=self.kwargs['uid'], project__uid=self.kwargs['puid'])
+    uop = UserOnProject.objects.select_related('user').get(user__uid=self.kwargs['uid'], project__uid=self.kwargs['puid'])
     uopm = UserOnProjectIndex.objects.all() \
             .select_related('user_on_project_month') \
             .values_list('user_on_project_month', flat=True) \
             .get(date_year_month=target_date, user_on_project_id=uop.uid)
-    uopd_items = UserOnProjectDay.objects.filter(month=uopm).prefetch_related('month').order_by('day_index')
-    return uopd_items
+    month = UserOnProjectMonth.objects.get(uid=uopm)
+    return month

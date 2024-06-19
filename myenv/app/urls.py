@@ -33,6 +33,6 @@ urlpatterns = [
     # ユーザプロジェクト一覧
     path("useronproject-list/", views.UserOnProjectListView.as_view()),
 
-    # ユーザプロジェクト勤務（指定のプロジェクトの指定月の日にち）一覧
-    path("useronprojectday-list/<int:uid>/<puid>/<yearmonth>/", views.UserOnProjectDayListView.as_view())
+    # ユーザプロジェクト勤務月詳細
+    path("useronprojectmonth/<uid>/<puid>/<yearmonth>/", views.UserOnProjectMonthView.as_view())
 ]

@@ -103,10 +103,20 @@ class UserOnProjectSerializer(serializers.ModelSerializer):
     model = UserOnProject
     fields = "__all__"
 
+# ユーザプロジェクト日のシリアライザー
+class UserOnProjectDaySerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+
+  class Meta:
+    model = UserOnProjectDay
+    fields = "__all__"
+
 # ユーザプロジェクト月のシリアライザー
 class UserOnProjectMonthSerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
+  days = UserOnProjectDaySerializer(many=True, read_only=True)
 
   class Meta:
     model = UserOnProjectMonth
@@ -121,16 +131,6 @@ class UserOnProjectIndexSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = UserOnProjectIndex
-    fields = "__all__"
-
-# ユーザプロジェクト日のシリアライザー
-class UserOnProjectDaySerializer(serializers.ModelSerializer):
-  # uidフィールドは読み取り専用
-  uid = serializers.UUIDField(read_only=True)
-  month = UserOnProjectMonthSerializer(read_only=True)
-
-  class Meta:
-    model = UserOnProjectDay
     fields = "__all__"
 
 # ユーザプロジェクト時間のシリアライザー
