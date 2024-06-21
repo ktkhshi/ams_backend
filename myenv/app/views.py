@@ -169,7 +169,22 @@ class UserOnProjectViewSet(ModelViewSet):
     # ユーザプロジェクトを作成する
     serializer.save()
 
+class MyUserOnProjectListView(ListAPIView):
+  serializer_class = UserOnProjectSerializer
+  permission_classes = (AllowAny,)
 
+  def get_queryset(self):
+    strdate = self.kwargs['yearmonth']
+    bufdate = datetime.datetime.strptime(strdate, '%Y%m')
+    target_date = datetime.datetime(bufdate.year, bufdate.month, 1)
+
+    uop_items = UserOnProject.objects.select_related('user') \
+                                      .select_related('project') \
+                                      .filter(user__uid=self.kwargs['uid']) \
+                                      .prefetch_related('indexes') \
+                                      .filter(indexes__date_year_month=target_date)
+    return uop_items
+  
 # ユーザプロジェクト勤務（日にち）一覧を提供するAPIビュー
 class UserOnProjectMonthView(RetrieveAPIView):
   serializer_class = UserOnProjectMonthSerializer

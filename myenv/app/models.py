@@ -84,7 +84,7 @@ class Contract(models.Model):
     
     started_on = models.DateField(verbose_name="契約開始日")
     ended_on = models.DateField(verbose_name="契約終了日", blank=True, null=True)
-    contract_name = models.CharField("契約名", max_length=255, default="")
+    contract_name = models.CharField(verbose_name="契約名", max_length=255, default="")
     note = models.CharField(verbose_name="備考", max_length=255, blank=True, default="")
 
     created_at = models.DateTimeField("作成日", auto_now_add=True)
@@ -224,7 +224,7 @@ class UserOnProjectIndex(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     user_on_project = models.ForeignKey(
-        UserOnProject, verbose_name="ユーザプロジェクト", on_delete=models.PROTECT
+        UserOnProject, verbose_name="ユーザプロジェクト", related_name='indexes', on_delete=models.PROTECT
     )
     date_year_month = models.DateField("年月")
 

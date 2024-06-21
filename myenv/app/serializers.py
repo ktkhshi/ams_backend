@@ -63,44 +63,13 @@ class ContractSerializer(serializers.ModelSerializer):
     model = Contract
     fields = "__all__"
 
-# ユーザプロジェクトのシリアライザー
-class UserOnProjectSerializer(serializers.ModelSerializer):
+# ユーザプロジェクト時間のシリアライザー
+class UserOnProjectTimeSerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
 
-  user = UserSerializer(read_only=True)
-  user_id = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all(), write_only=True)
-  project = ProjectSerializer(read_only=True)
-  project_uid = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(), write_only=True)
-  client = ClientSerializer(read_only=True)
-  client_uid = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all(), write_only=True)
-  contract = ContractSerializer(read_only=True)
-  contract_uid = serializers.PrimaryKeyRelatedField(queryset=Contract.objects.all(), write_only=True)
-
-  def create(self, validated_data):
-    validated_data['user'] = validated_data.get('user_id', None)
-    if validated_data['user'] is None:
-        raise serializers.ValidationError("user not found.") 
-    del validated_data['user_id']
-
-    validated_data['project'] = validated_data.get('project_uid', None)
-    if validated_data['project'] is None:
-        raise serializers.ValidationError("project not found.") 
-    del validated_data['project_uid']
-
-    validated_data['client'] = validated_data.get('client_uid', None)
-    if validated_data['client'] is None:
-        raise serializers.ValidationError("client not found.") 
-    del validated_data['client_uid']
-
-    validated_data['contract'] = validated_data.get('contract_uid', None)
-    if validated_data['contract'] is None:
-        raise serializers.ValidationError("contract not found.") 
-    del validated_data['contract_uid']
-
-    return UserOnProject.objects.create(**validated_data)
   class Meta:
-    model = UserOnProject
+    model = UserOnProjectTime
     fields = "__all__"
 
 # ユーザプロジェクト日のシリアライザー
@@ -126,18 +95,50 @@ class UserOnProjectMonthSerializer(serializers.ModelSerializer):
 class UserOnProjectIndexSerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
-  user_on_project = UserOnProjectSerializer
   user_on_project_month = UserOnProjectMonthSerializer
 
   class Meta:
     model = UserOnProjectIndex
     fields = "__all__"
 
-# ユーザプロジェクト時間のシリアライザー
-class UserOnProjectTimeSerializer(serializers.ModelSerializer):
+# ユーザプロジェクトのシリアライザー
+class UserOnProjectSerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
 
+  user = UserSerializer(read_only=True)
+  user_id = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all(), write_only=True)
+  project = ProjectSerializer(read_only=True)
+  project_uid = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(), write_only=True)
+  client = ClientSerializer(read_only=True)
+  client_uid = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all(), write_only=True)
+  contract = ContractSerializer(read_only=True)
+  contract_uid = serializers.PrimaryKeyRelatedField(queryset=Contract.objects.all(), write_only=True)
+
+  indexes = UserOnProjectIndexSerializer(many=True, read_only=True)
+
+  def create(self, validated_data):
+    validated_data['user'] = validated_data.get('user_id', None)
+    if validated_data['user'] is None:
+        raise serializers.ValidationError("user not found.") 
+    del validated_data['user_id']
+
+    validated_data['project'] = validated_data.get('project_uid', None)
+    if validated_data['project'] is None:
+        raise serializers.ValidationError("project not found.") 
+    del validated_data['project_uid']
+
+    validated_data['client'] = validated_data.get('client_uid', None)
+    if validated_data['client'] is None:
+        raise serializers.ValidationError("client not found.") 
+    del validated_data['client_uid']
+
+    validated_data['contract'] = validated_data.get('contract_uid', None)
+    if validated_data['contract'] is None:
+        raise serializers.ValidationError("contract not found.") 
+    del validated_data['contract_uid']
+
+    return UserOnProject.objects.create(**validated_data)
   class Meta:
-    model = UserOnProjectTime
+    model = UserOnProject
     fields = "__all__"

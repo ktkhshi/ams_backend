@@ -33,6 +33,9 @@ urlpatterns = [
     # ユーザプロジェクト一覧
     path("useronproject-list/", views.UserOnProjectListView.as_view()),
 
+    # ユーザプロジェクト一覧（ユーザごとの指定月のUOP一覧）
+    path("useronproject-list/<uid>/<yearmonth>", views.MyUserOnProjectListView.as_view()),
+
     # ユーザプロジェクト勤務月詳細
-    path("useronprojectmonth/<uid>/<puid>/<yearmonth>/", views.UserOnProjectMonthView.as_view())
+    path("useronprojectmonth/<uid>/<yearmonth>/<puid>", views.UserOnProjectMonthView.as_view())
 ]
