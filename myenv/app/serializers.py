@@ -76,6 +76,7 @@ class UserOnProjectTimeSerializer(serializers.ModelSerializer):
 class UserOnProjectDaySerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
+  times = UserOnProjectTimeSerializer(many=True, read_only=True)
 
   class Meta:
     model = UserOnProjectDay

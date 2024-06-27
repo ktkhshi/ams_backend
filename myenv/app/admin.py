@@ -110,7 +110,7 @@ admin.site.register(UserOnProjectDay, UserOnProjectDayCustom)
 
 class UserOnProjectTimeCustom(ModelAdmin):
     # 一覧
-    list_display = ("uid", "month", "day_index", "time_index", "work_started_at", "work_ended_at", "rest_started_at", "rest_ended_at", "private_note", "public_note", "updated_at", "created_at")
+    list_display = ("uid", "day", "time_index", "work_started_at", "work_ended_at", "rest_started_at", "rest_ended_at", "private_note", "public_note", "updated_at", "created_at")
     # リンク
     list_display_links = ("uid",)
     # 順番

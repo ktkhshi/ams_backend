@@ -1,5 +1,7 @@
 import datetime
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ModelViewSet
@@ -11,6 +13,8 @@ from .models import Contract
 from .models import UserOnProject
 from .models import UserOnProjectIndex
 from .models import UserOnProjectMonth
+from .models import UserOnProjectDay
+from .models import UserOnProjectTime
 from .serializers import PostSerializer
 from .serializers import UserSerializer
 from .serializers import ClientSerializer
@@ -18,6 +22,7 @@ from .serializers import ProjectSerializer
 from .serializers import ContractSerializer
 from .serializers import UserOnProjectSerializer
 from .serializers import UserOnProjectMonthSerializer
+from .serializers import UserOnProjectDaySerializer
 
 # 投稿一覧を提供するAPIビュー
 class PostListView(ListAPIView):
@@ -185,8 +190,8 @@ class MyUserOnProjectListView(ListAPIView):
                                       .filter(indexes__date_year_month=target_date)
     return uop_items
   
-# ユーザプロジェクト勤務（日にち）一覧を提供するAPIビュー
-class UserOnProjectMonthView(RetrieveAPIView):
+# ユーザプロジェクト勤務月詳細（日にち）一覧を提供するAPIビュー
+class UserOnProjectMonthDetailView(RetrieveAPIView):
   serializer_class = UserOnProjectMonthSerializer
   permission_classes = (AllowAny,)
 
@@ -202,3 +207,59 @@ class UserOnProjectMonthView(RetrieveAPIView):
             .get(date_year_month=target_date, user_on_project_id=uop.uid)
     month = UserOnProjectMonth.objects.get(uid=uopm)
     return month
+
+# ユーザプロジェクト勤務日詳細（時間）一覧を提供するAPIビュー
+class UserOnProjectDayDetailView(RetrieveAPIView):
+  queryset = UserOnProjectDay.objects.all()
+  serializer_class = UserOnProjectDaySerializer
+  lookup_field = 'uid'
+  permission_classes = (AllowAny,)
+
+# ユーザプロジェクト勤務日詳細更新を行うAPIビュー
+class UserOnProjectDayDetailUpdateView(UpdateAPIView):
+  queryset = UserOnProjectDay.objects.all()
+  serializer_class = UserOnProjectDaySerializer
+  update_fields = ['work_started_at', 'work_ended_at', 'rest_hours', 'private_note', 'public_note']
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+  #permission_classes = (IsAdminUser,)
+
+  # 更新時の処理
+  def post(self, request, **kwargs):
+    day_instance = UserOnProjectDay.objects.get(uid=self.kwargs['uid'])
+   
+    times_data = request.data.get('times', [])
+    if times_data:
+        index = 0
+        for time_data in times_data:
+          index += 1
+          time_instance, _ = UserOnProjectTime.objects.update_or_create(
+            day_id=day_instance.uid,time_index=index, 
+            defaults={"work_started_at": time_data.get('work_started_at'),
+                      "work_ended_at": time_data.get('work_ended_at'),
+                      "rest_started_at": time_data.get('rest_ended_at'),
+                      "rest_ended_at": time_data.get('rest_ended_at'),
+                      "private_note": time_data.get('private_note'),
+                      "public_note": time_data.get('public_note')},
+            create_defaults={"work_started_at": time_data.get('work_started_at'),
+                             "work_ended_at": time_data.get('work_ended_at'),
+                             "rest_started_at": time_data.get('rest_ended_at'),
+                             "rest_ended_at": time_data.get('rest_ended_at'),
+                             "private_note": time_data.get('private_note'),
+                             "public_note": time_data.get('public_note')})
+          time_instance.save()
+
+        # 日を更新する
+        day_instance.work_started_at = request.data.get('work_started_at', day_instance.work_started_at)
+        day_instance.work_ended_at = request.data.get('work_ended_at', day_instance.work_ended_at)
+        day_instance.rest_hours = request.data.get('rest_hours', day_instance.rest_hours)
+        day_instance.private_note = request.data.get('private_note', day_instance.private_note)
+        day_instance.public_note = request.data.get('public_note', day_instance.public_note)
+        day_instance.save(force_insert=False)
+        # 更新後のデータをシリアライザでシリアライズする
+        serializer = self.get_serializer(day_instance)
+        # 成功レスポンスを返す
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        # エラー処理: 時間モデルのデータがリクエストに含まれていない場合
+        return Response({'error': 'Times data is required'}, status=status.HTTP_400_BAD_REQUEST)

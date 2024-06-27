@@ -44,6 +44,9 @@ class Project(models.Model):
     sub_name = models.CharField("サブ名", max_length=255)
     note = models.CharField(verbose_name="備考", max_length=255, blank=True, default="")
 
+    started_on = models.DateField(verbose_name="開始日")
+    ended_on = models.DateField(verbose_name="終了日", blank=True, null=True)
+
     created_at = models.DateTimeField("作成日", auto_now_add=True)
     updated_at = models.DateTimeField("更新日", auto_now=True)
     class Meta:
@@ -194,16 +197,15 @@ class UserOnProjectDay(models.Model):
 class UserOnProjectTime(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    month = models.ForeignKey(
-        UserOnProjectMonth, verbose_name="ユーザプロジェクト月", on_delete=models.PROTECT
+    day = models.ForeignKey(
+        UserOnProjectDay, verbose_name="ユーザプロジェクト月", related_name='times', on_delete=models.PROTECT
     )
-    day_index = models.PositiveSmallIntegerField("日にちインデックス")
     time_index = models.PositiveSmallIntegerField("時間インデックス")
 
     work_started_at = models.TimeField(verbose_name="開始時刻")
     work_ended_at = models.TimeField(verbose_name="終了時刻")
-    rest_started_at = models.TimeField(verbose_name="休憩開始時刻")
-    rest_ended_at = models.TimeField(verbose_name="休憩終了時刻")
+    rest_started_at = models.TimeField(verbose_name="休憩開始時刻", blank=True, null=True)
+    rest_ended_at = models.TimeField(verbose_name="休憩終了時刻", blank=True, null=True)
     private_note = models.CharField(verbose_name="個人メモ", max_length=255, blank=True, default="")
     public_note = models.CharField(verbose_name="公開メモ", max_length=255, blank=True, default="")
 
@@ -213,11 +215,11 @@ class UserOnProjectTime(models.Model):
         verbose_name = "ユーザプロジェクト時間"
         verbose_name_plural = "ユーザプロジェクト時間"
         constraints = [
-            models.UniqueConstraint(fields=['month', 'day_index', 'time_index'], name='unique_user_project_time')
+            models.UniqueConstraint(fields=['day', 'time_index'], name='unique_user_project_time')
         ]
 
     def __str__(self):
-        return str(self.month.uid) + "-" + f'{self.day_index:02}' + "-" + f'{self.time_index:02}'
+        return str(self.day.uid) + "-" + f'{self.time_index:02}'
 
 # ユーザプロジェクトインデックスモデル（中間テーブル）
 class UserOnProjectIndex(models.Model):
