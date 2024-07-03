@@ -15,6 +15,8 @@ from .models import UserOnProjectIndex
 from .models import UserOnProjectMonth
 from .models import UserOnProjectDay
 from .models import UserOnProjectTime
+from .models import AttendanceType
+from .models import UserSpecialAttendance
 from .serializers import PostSerializer
 from .serializers import UserSerializer
 from .serializers import ClientSerializer
@@ -23,6 +25,8 @@ from .serializers import ContractSerializer
 from .serializers import UserOnProjectSerializer
 from .serializers import UserOnProjectMonthSerializer
 from .serializers import UserOnProjectDaySerializer
+from .serializers import AttendanceTypeSerializer
+from .serializers import UserSpecialAttendanceSerializer
 
 # 投稿一覧を提供するAPIビュー
 class PostListView(ListAPIView):
@@ -109,7 +113,6 @@ class ProjectListView(ListAPIView):
   # どのユーザでもアクセス可能
   permission_classes = (AllowAny,)
   #permission_classes = (IsAdminUser,)
-
 
 # 新規プロジェクト作成、編集、削除を行うAPIビューセット
 class ProjectViewSet(ModelViewSet):
@@ -237,13 +240,13 @@ class UserOnProjectDayDetailUpdateView(UpdateAPIView):
             day_id=day_instance.uid,time_index=index, 
             defaults={"work_started_at": time_data.get('work_started_at'),
                       "work_ended_at": time_data.get('work_ended_at'),
-                      "rest_started_at": time_data.get('rest_ended_at'),
+                      "rest_started_at": time_data.get('rest_started_at'),
                       "rest_ended_at": time_data.get('rest_ended_at'),
                       "private_note": time_data.get('private_note'),
                       "public_note": time_data.get('public_note')},
             create_defaults={"work_started_at": time_data.get('work_started_at'),
                              "work_ended_at": time_data.get('work_ended_at'),
-                             "rest_started_at": time_data.get('rest_ended_at'),
+                             "rest_started_at": time_data.get('rest_started_at'),
                              "rest_ended_at": time_data.get('rest_ended_at'),
                              "private_note": time_data.get('private_note'),
                              "public_note": time_data.get('public_note')})
@@ -263,3 +266,37 @@ class UserOnProjectDayDetailUpdateView(UpdateAPIView):
     else:
         # エラー処理: 時間モデルのデータがリクエストに含まれていない場合
         return Response({'error': 'Times data is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+# 勤務タイプ一覧を提供するAPIビュー
+class AttendanceListView(ListAPIView):
+  # 更新日時で降順に並び替え
+  queryset = AttendanceType.objects.all().order_by("sort_order")
+  serializer_class = AttendanceTypeSerializer
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+
+# ユーザ特別勤務一覧を提供するAPIビュー
+class UserSpecialAttendanceListView(ListAPIView):
+  # 日付で降順に並び替え
+  serializer_class = UserSpecialAttendanceSerializer
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+
+  def get_queryset(self):
+    usa_items = UserSpecialAttendance.objects.select_related('user') \
+          .filter(user__uid=self.kwargs['uid']).order_by("-date_day")
+    return usa_items
+
+# 新規ユーザ特別勤務作成、編集、削除を行うAPIビューセット
+class UserSpecialAttendanceViewSet(ModelViewSet):
+  queryset = UserSpecialAttendance.objects.all()
+  serializer_class = UserSpecialAttendanceSerializer
+  # ユーザ特別勤務を識別するためにuidフィールドを使用
+  lookup_field = "uid"
+  # どのユーザでもアクセス可能
+  permission_classes = (AllowAny,)
+
+  # 新規ユーザ特別勤務作成時の保存処理
+  def perform_create(self, serializer, **kwargs):
+    # 作成をリクエストしたユーザでユーザ特別勤務を作成する
+    serializer.save(user=self.request.user)

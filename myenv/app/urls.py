@@ -9,6 +9,7 @@ router.register("clients", views.ClientViewSet)
 router.register("projects", views.ProjectViewSet)
 router.register("contracts", views.ContractViewSet)
 router.register("useronprojects", views.UserOnProjectViewSet)
+router.register("userspecialattendances", views.UserSpecialAttendanceViewSet)
 
 urlpatterns = [
     # 投稿一覧
@@ -45,4 +46,9 @@ urlpatterns = [
     # ユーザプロジェクト勤務日詳細更新 
     path("useronprojectday/update/<uid>", views.UserOnProjectDayDetailUpdateView.as_view()),
 
+    # 勤務タイプ一覧
+    path("attendancetype-list/", views.AttendanceListView.as_view()),
+
+    # ユーザ特別勤務一覧
+    path("userspecialattendance-list/<uid>", views.UserSpecialAttendanceListView.as_view())
 ]

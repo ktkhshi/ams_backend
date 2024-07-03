@@ -11,6 +11,8 @@ from app.models import UserOnProjectIndex
 from app.models import UserOnProjectMonth
 from app.models import UserOnProjectDay
 from app.models import UserOnProjectTime
+from app.models import AttendanceType
+from app.models import UserSpecialAttendance
 
 # 投稿のシリアライザー
 class PostSerializer(serializers.ModelSerializer):
@@ -142,4 +144,25 @@ class UserOnProjectSerializer(serializers.ModelSerializer):
     return UserOnProject.objects.create(**validated_data)
   class Meta:
     model = UserOnProject
+    fields = "__all__"
+
+class AttendanceTypeSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  id = serializers.IntegerField(read_only=True)
+
+  class Meta:
+    model = AttendanceType
+    fields = (
+        'id',
+        'attendance_name',
+        'sort_order',
+    )
+
+class UserSpecialAttendanceSerializer(serializers.ModelSerializer):
+  # uidフィールドは読み取り専用
+  uid = serializers.UUIDField(read_only=True)
+  attendance_type = AttendanceTypeSerializer(read_only=True)
+
+  class Meta:
+    model = UserSpecialAttendance
     fields = "__all__"

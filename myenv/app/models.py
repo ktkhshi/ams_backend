@@ -262,7 +262,7 @@ class AttendanceType(models.Model):
 
 # ユーザ特別勤務モデル
 class UserSpecialAttendance(models.Model):
-    uid = models.CharField("uid", max_length=40, unique=True, primary_key=True)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE
@@ -285,13 +285,6 @@ class UserSpecialAttendance(models.Model):
 
     def __str__(self):
         return self.user.uid, self.date_day
-
-@receiver(post_save, sender=UserSpecialAttendance)
-def generate_user_special_attendance_uid(sender, instance, created, **kwargs):
-    # 新規作成時にUIDを生成
-    if created:
-        instance.uid = sender.user.uid + "-" + sender.date_day.strftime('%Y%m%d')
-        instance.save()
 
 # 共通祝日モデル
 class CommonHoliday(models.Model):
