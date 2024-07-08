@@ -13,6 +13,7 @@ from app.models import UserOnProjectDay
 from app.models import UserOnProjectTime
 from app.models import AttendanceType
 from app.models import UserSpecialAttendance
+from app.models import CommonHoliday
 
 # 投稿のシリアライザー
 class PostSerializer(serializers.ModelSerializer):
@@ -80,9 +81,25 @@ class UserOnProjectDaySerializer(serializers.ModelSerializer):
   uid = serializers.UUIDField(read_only=True)
   times = UserOnProjectTimeSerializer(many=True, read_only=True)
 
+  date_name = serializers.SerializerMethodField()
+
   class Meta:
     model = UserOnProjectDay
     fields = "__all__"
+   
+  def get_date_name(self, obj):
+    try:
+      holiday = CommonHoliday.objects.get(date_day=obj.date_day)
+      return holiday.name
+    except CommonHoliday.DoesNotExist:
+      try:
+        user_id = self.context['uid']
+        specialAttendance = UserSpecialAttendance.objects.select_related('user').filter(user__id=user_id).get(date_day=obj.date_day)
+        return specialAttendance.attendance_type.attendance_name
+      except UserSpecialAttendance.DoesNotExist:
+        return ""
+      except KeyError:
+        return ""
 
 # ユーザプロジェクト月のシリアライザー
 class UserOnProjectMonthSerializer(serializers.ModelSerializer):
@@ -161,8 +178,13 @@ class AttendanceTypeSerializer(serializers.ModelSerializer):
 class UserSpecialAttendanceSerializer(serializers.ModelSerializer):
   # uidフィールドは読み取り専用
   uid = serializers.UUIDField(read_only=True)
-  attendance_type = AttendanceTypeSerializer(read_only=True)
+  attendance_type = AttendanceTypeSerializer
 
   class Meta:
     model = UserSpecialAttendance
     fields = "__all__"
+    read_only_fields = ['user']
+
+  def create(self, validated_data):
+    validated_data['user'] = self.context['request'].user
+    return super().create(validated_data)

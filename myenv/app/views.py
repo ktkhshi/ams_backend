@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from .models import Post
 from accounts.models import UserAccount
@@ -198,6 +199,12 @@ class UserOnProjectMonthDetailView(RetrieveAPIView):
   serializer_class = UserOnProjectMonthSerializer
   permission_classes = (AllowAny,)
 
+  def get_serializer_context(self):
+    user = UserAccount.objects.get(uid=self.kwargs['uid'])
+    context = super().get_serializer_context()
+    context['uid'] = user.id
+    return context
+
   def get_object(self):
     strdate = self.kwargs['yearmonth']
     bufdate = datetime.datetime.strptime(strdate, '%Y%m')
@@ -293,8 +300,7 @@ class UserSpecialAttendanceViewSet(ModelViewSet):
   serializer_class = UserSpecialAttendanceSerializer
   # ユーザ特別勤務を識別するためにuidフィールドを使用
   lookup_field = "uid"
-  # どのユーザでもアクセス可能
-  permission_classes = (AllowAny,)
+  permission_classes = (IsAuthenticated,)
 
   # 新規ユーザ特別勤務作成時の保存処理
   def perform_create(self, serializer, **kwargs):
